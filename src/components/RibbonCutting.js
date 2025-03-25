@@ -19,7 +19,6 @@ const RibbonCutting = ({
   ribbonColor = '#ff0000', 
   width = 5,
   isCut = false,
-  onComplete = () => {},
   autoRotate = false
 }) => {
   const [hasCut, setHasCut] = useState(false);
@@ -27,14 +26,10 @@ const RibbonCutting = ({
   useEffect(() => {
     if (isCut && !hasCut) {
       setHasCut(true);
-      // Call the completion callback after the ribbon falls
-      setTimeout(() => {
-        onComplete();
-      }, 1000);
     } else if (!isCut && hasCut) {
       setHasCut(false);
     }
-  }, [isCut, hasCut, onComplete]);
+  }, [isCut, hasCut]);
   
   return (
     <Canvas shadows gl={{ antialias: true }} dpr={[1, 2]} style={{ width: '100%', height: '100%' }}>

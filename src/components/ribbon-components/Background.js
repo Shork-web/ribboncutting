@@ -1,7 +1,6 @@
 import React, { useMemo } from 'react';
 import * as THREE from 'three';
 import { useTexture } from '@react-three/drei';
-import { GradientTexture } from './utils/GradientTexture';
 
 // Background with buildings and plants component
 export const Background = React.memo(() => {

@@ -114,33 +114,6 @@ export const Ribbon = React.memo(({ width, color, isCut }) => {
             speed={0.5}
             color="white"
           />
-          
-          <group position={[0, standHeight + 1, 0]}>
-            <Text
-              position={[0, 0, 0]}
-              fontSize={0.5}
-              color="black"
-              font="/fonts/Inter-Bold.woff"
-              anchorX="center"
-              anchorY="middle"
-            >
-              Grand Opening!
-            </Text>
-            
-            <group position={[-1.5, -0.5, 0]}>
-              <mesh position={[0, 0, 0]}>
-                <sphereGeometry args={[0.3, 32, 32]} />
-                <meshStandardMaterial color="#FFD700" metalness={0.8} roughness={0.2} />
-              </mesh>
-            </group>
-            
-            <group position={[1.5, -0.5, 0]}>
-              <mesh position={[0, 0, 0]}>
-                <sphereGeometry args={[0.3, 32, 32]} />
-                <meshStandardMaterial color="#FFD700" metalness={0.8} roughness={0.2} />
-              </mesh>
-            </group>
-          </group>
         </>
       )}
     </group>
