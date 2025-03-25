@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { 
   PerspectiveCamera, 
@@ -11,8 +11,7 @@ import { Floor } from './ribbon-components/Floor';
 import { Ribbon } from './ribbon-components/Ribbon';
 import { Confetti } from './ribbon-components/Confetti';
 import { LightBeams } from './ribbon-components/LightBeams';
-import { AtmosphericClouds } from './ribbon-components/AtmosphericClouds';
-import { Background } from './ribbon-components/Background';
+import { SingletonBackground } from './ribbon-components/SingletonBackground';
 
 // Main component with enhanced features
 const RibbonCutting = ({ 
@@ -21,23 +20,29 @@ const RibbonCutting = ({
   isCut = false,
   autoRotate = false
 }) => {
+  console.log("RibbonCutting component rendered, isCut:", isCut);
   const [hasCut, setHasCut] = useState(false);
+  const controlsRef = useRef();
   
   useEffect(() => {
+    console.log("RibbonCutting effect running, isCut:", isCut, "hasCut:", hasCut);
     if (isCut && !hasCut) {
+      console.log("Setting hasCut to true");
       setHasCut(true);
     } else if (!isCut && hasCut) {
+      console.log("Setting hasCut to false");
       setHasCut(false);
+      // We don't reset the camera when cutting again
     }
   }, [isCut, hasCut]);
   
   return (
     <Canvas shadows gl={{ antialias: true }} dpr={[1, 2]} style={{ width: '100%', height: '100%' }}>
       <color attach="background" args={['#f5f5f5']} />
-      <fog attach="fog" args={['#f5f5f5', 5, 30]} />
       
       <PerspectiveCamera makeDefault position={[0, 1, 7]} fov={40} />
       <OrbitControls 
+        ref={controlsRef}
         enablePan={false}
         enableZoom={true}
         maxPolarAngle={Math.PI / 2}
@@ -46,6 +51,8 @@ const RibbonCutting = ({
         autoRotateSpeed={0.7}
         enableDamping
         dampingFactor={0.05}
+        // Don't reset the camera when the component re-renders
+        makeDefault
       />
       
       {/* Lighting setup */}
@@ -81,6 +88,9 @@ const RibbonCutting = ({
         castShadow={false}
       />
       
+      {/* Singleton Background - rendered first and only once */}
+      <SingletonBackground />
+      
       {/* Configure the Physics system with appropriate settings */}
       <Physics 
         gravity={[0, -3, 0]}
@@ -94,7 +104,7 @@ const RibbonCutting = ({
         <SceneContent 
           width={width} 
           ribbonColor={ribbonColor} 
-          isCut={hasCut} 
+          isCut={hasCut}
         />
       </Physics>
     </Canvas>
@@ -102,17 +112,17 @@ const RibbonCutting = ({
 };
 
 // Scene content component - this wraps all 3D elements
-function SceneContent({ width, ribbonColor, isCut }) {
+const SceneContent = React.memo(({ width, ribbonColor, isCut }) => {
+  console.log("SceneContent rendered, isCut:", isCut);
+  
   return (
     <>
-      <Background />
       <Ribbon width={width} color={ribbonColor} isCut={isCut} />
       <Floor />
       <Confetti isCut={isCut} />
       <LightBeams isCut={isCut} />
-      <AtmosphericClouds isCut={isCut} />
     </>
   );
-}
+});
 
 export default RibbonCutting; 

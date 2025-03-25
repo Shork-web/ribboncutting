@@ -6,27 +6,59 @@ import { Scissors } from './Scissors';
 
 // Main ribbon component
 export const Ribbon = React.memo(({ width, color, isCut }) => {
+  console.log("Ribbon component rendered, isCut:", isCut);
   const segmentHeight = 0.8;
   const segmentDepth = 0.05;
   const standHeight = 1.6;
   const [showCutPieces, setShowCutPieces] = useState(false);
   const [showWholeRibbon, setShowWholeRibbon] = useState(true);
   
+  // Memoize ribbon segments props to prevent unnecessary re-renders
+  const wholeRibbonProps = React.useMemo(() => ({
+    position: [0, standHeight - segmentHeight/2 - 0.5, 0],
+    width: width - 0.2,
+    height: segmentHeight,
+    depth: segmentDepth,
+    color: color,
+    isCut: false
+  }), [width, color, standHeight, segmentHeight, segmentDepth]);
+  
+  const leftSegmentProps = React.useMemo(() => ({
+    position: [-width/4, standHeight - segmentHeight/2 - 0.5, 0],
+    width: width/2 - 0.1,
+    height: segmentHeight,
+    depth: segmentDepth,
+    color: color,
+    isCut: true,
+    dropDirection: [-1, -1, 0],
+    rotationOnDrop: [-0.2, 0, -0.5]
+  }), [width, color, standHeight, segmentHeight, segmentDepth]);
+  
+  const rightSegmentProps = React.useMemo(() => ({
+    position: [width/4, standHeight - segmentHeight/2 - 0.5, 0],
+    width: width/2 - 0.1,
+    height: segmentHeight,
+    depth: segmentDepth,
+    color: color,
+    isCut: true,
+    dropDirection: [1, -1, 0],
+    rotationOnDrop: [0.2, 0, 0.5]
+  }), [width, color, standHeight, segmentHeight, segmentDepth]);
+  
   // Handle the transition between whole ribbon and cut pieces
   useEffect(() => {
+    console.log("Ribbon effect running, isCut:", isCut, "showCutPieces:", showCutPieces);
     if (isCut && !showCutPieces) {
-      // Short delay before showing cut pieces to sync with scissors cutting action
+      console.log("Starting ribbon cut transition");
+      // Single timeout for the transition
       const timer = setTimeout(() => {
+        setShowWholeRibbon(false);
         setShowCutPieces(true);
-        // Brief overlap where both are visible for smoother transition
-        setTimeout(() => {
-          setShowWholeRibbon(false);
-        }, 50);
       }, 400); // Timed to match the scissors cutting through point
       
       return () => clearTimeout(timer);
     } else if (!isCut && showCutPieces) {
-      // Reset when going back to uncut state
+      console.log("Resetting ribbon state");
       setShowWholeRibbon(true);
       setShowCutPieces(false);
     }
@@ -48,49 +80,24 @@ export const Ribbon = React.memo(({ width, color, isCut }) => {
       
       {/* Complete ribbon when not cut or during transition */}
       {showWholeRibbon && (
-        <RibbonSegment 
-          position={[0, standHeight - segmentHeight/2 - 0.5, 0]} 
-          width={width - 0.2}
-          height={segmentHeight}
-          depth={segmentDepth}
-          color={color}
-          isCut={false}
-        />
+        <RibbonSegment {...wholeRibbonProps} />
       )}
       
       {/* Cut ribbon pieces */}
       {showCutPieces && (
         <>
           {/* Left ribbon segment */}
-          <RibbonSegment 
-            position={[-width/4, standHeight - segmentHeight/2 - 0.5, 0]} 
-            width={width/2 - 0.1}
-            height={segmentHeight}
-            depth={segmentDepth}
-            color={color}
-            isCut={true}
-            dropDirection={[-1, -1, 0]}
-            rotationOnDrop={[-0.2, 0, -0.5]}
-          />
+          <RibbonSegment {...leftSegmentProps} />
           
           {/* Right ribbon segment */}
-          <RibbonSegment 
-            position={[width/4, standHeight - segmentHeight/2 - 0.5, 0]} 
-            width={width/2 - 0.1}
-            height={segmentHeight}
-            depth={segmentDepth}
-            color={color}
-            isCut={true}
-            dropDirection={[1, -1, 0]}
-            rotationOnDrop={[0.2, 0, 0.5]}
-          />
+          <RibbonSegment {...rightSegmentProps} />
         </>
       )}
       
-      {/* Scissors */}
+      {/* Scissors - repositioned extremely far back from the banner */}
       <Scissors 
-        position={[0, standHeight - 0.8, 0.2]} 
-        size={0.6}
+        position={[0, standHeight - 1.0, -2.5]} 
+        size={2.0}
         isCut={isCut}
       />
       

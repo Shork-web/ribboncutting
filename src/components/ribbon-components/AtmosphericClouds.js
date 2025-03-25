@@ -5,14 +5,14 @@ import { Cloud } from '@react-three/drei';
 // Atmospheric clouds
 export const AtmosphericClouds = React.memo(({ isCut }) => {
   const cloudsRef = useRef();
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(true);
   
   useEffect(() => {
     if (isCut) {
-      // Show clouds with a delay
-      setTimeout(() => setVisible(true), 500);
+      // Hide clouds with a delay
+      setTimeout(() => setVisible(false), 500);
     } else {
-      setVisible(false);
+      setVisible(true);
     }
   }, [isCut]);
   

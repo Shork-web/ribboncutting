@@ -14,6 +14,7 @@ export const RibbonSegment = React.memo(({
   dropDirection = [0, -1, 0],
   rotationOnDrop = [0, 0, 0]
 }) => {
+  console.log("RibbonSegment rendered, isCut:", isCut);
   const [isDetached, setIsDetached] = useState(false);
   const meshRef = useRef();
   
@@ -30,7 +31,9 @@ export const RibbonSegment = React.memo(({
   
   // Handle cutting effect
   useEffect(() => {
+    console.log("RibbonSegment effect running, isCut:", isCut, "isDetached:", isDetached);
     if (isCut && !isDetached && api) {
+      console.log("Applying physics to ribbon segment");
       // Safety checks before calling methods
       if (api.mass && typeof api.mass.set === 'function') {
         api.mass.set(1);
@@ -42,6 +45,7 @@ export const RibbonSegment = React.memo(({
       
       // Apply impulse and torque after a small delay
       const timer = setTimeout(() => {
+        console.log("Applying forces to ribbon segment");
         if (api.applyLocalForce && typeof api.applyLocalForce === 'function') {
           api.applyLocalForce(
             [dropDirection[0] * 30, dropDirection[1] * 50, dropDirection[2] * 10], 
